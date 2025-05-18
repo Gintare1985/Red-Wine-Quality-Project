@@ -1,0 +1,22 @@
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# System files MacOS
+.DS_Store
+
+# IDE configuration files
+.vscode/
+.idea/
+
+# Virtual environment folder
+.venv/
+
+# Python cache files
+__pycache__/
+
+# Python compiled files
+*.pyc
+*.pyo
+
+# Log files
+*.log
