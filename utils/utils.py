@@ -17,9 +17,6 @@ from sklearn.metrics import (
     confusion_matrix,
     classification_report,
     accuracy_score,
-    # precision_score,
-    # recall_score,
-    # f1_score,
     ConfusionMatrixDisplay,
     balanced_accuracy_score,
     mean_absolute_error,
@@ -30,7 +27,6 @@ from statsmodels.stats.diagnostic import linear_reset
 from statsmodels.regression.linear_model import RegressionResultsWrapper
 from statsmodels.miscmodels.ordinal_model import OrderedResultsWrapper
 from statsmodels.stats.outliers_influence import OLSInfluence
-
 
 
 def get_general_df_info(df: pd.DataFrame) -> None:
@@ -156,6 +152,7 @@ def plot_numerical_feature_distribution(
                 ax.set_title(f"Boxplot of {feature}", pad=20)
             elif col == 2:
                 sns.scatterplot(ax=ax, data=df, x=feature, y="quality")
+                ax.set_xlabel(feature)
                 ax.set_title(f"Scatterplot of {feature} vs. {hue}", pad=20)
             elif col == 3:
                 sns.boxplot(ax=ax, data=df, y=feature, hue=hue, palette="viridis")
@@ -209,6 +206,7 @@ def make_polyplot(
         multiple=multiple,
         ax=ax,
     )
+    ax.set_xlabel(feature)
     ax.set_title(title, pad=20)
     sns.move_legend(
         ax,
@@ -250,7 +248,7 @@ def make_pairplot(
         aspect=aspect,
         plot_kws={"alpha": alpha},
     )
-    plt.suptitle(suptitle, x=top_right, y=top, fontsize=12)
+    plt.suptitle(suptitle, x=top_right, y=top, fontsize=11)
     plt.show()
 
 
@@ -871,7 +869,7 @@ def compare_train_test_metrics(
     R_sq_adj_test = 1 - (1 - R_sq_test) * (n - 1) / (n - p - 1)
 
     MAE_test = mean_absolute_error(y_test, y_test_pred)
-    RSE_test = np.sqrt(mean_squared_error(y_test, y_test_pred) * n / (n - p))
+    RSE_test = np.sqrt(mean_squared_error(y_test, y_test_pred) * n / (n - p - 1))
 
     comparison_metrics = pd.DataFrame(
         {"Train data": train_metrics, "Test data": [R_sq_adj_test, MAE_test, RSE_test]},
@@ -1015,6 +1013,7 @@ def plot_multi_lines(
     ylabel: str,
     xlabel: str,
     title: str,
+    legend_title: str,
     x: str = None,
     y: str = None,
     hue: str = None,
@@ -1031,6 +1030,7 @@ def plot_multi_lines(
         ylabel (str): The y axis label.
         xlabel (str): The x axis label.
         title (str): The title of the plot.
+        legend_title (str): The title of legends.
         x (str, optional): The feature for the x axis. Defaults to None.
         y (str, optional): The feature for the y axis. Defaults to None.
         hue (str, optional): The feature used as hue. Defaults to None.
@@ -1060,7 +1060,7 @@ def plot_multi_lines(
         ax.axhline(0, color="gray", linestyle="--", linewidth=0.6)
     ax.legend(
         loc="upper left",
-        title="Predictors",
+        title=legend_title,
         fontsize=9,
         title_fontsize=9,
         bbox_to_anchor=(1, 1),
