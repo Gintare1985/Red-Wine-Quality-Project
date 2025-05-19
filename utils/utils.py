@@ -2,28 +2,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import matplotlib
-import scipy.stats as stats
 import seaborn as sns
 import statsmodels.api as sm
-from sklearn.model_selection import train_test_split
-from scipy.stats import spearmanr
 from sklearn.preprocessing import StandardScaler
-from statsmodels.stats.outliers_influence import variance_inflation_factor as VIF
-from statsmodels.tools.tools import add_constant
-from statsmodels.stats.anova import anova_lm
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from statsmodels.miscmodels.ordinal_model import OrderedModel
 from sklearn.metrics import (
     confusion_matrix,
-    classification_report,
-    accuracy_score,
     ConfusionMatrixDisplay,
-    balanced_accuracy_score,
     mean_absolute_error,
 )
-from statsmodels.stats.diagnostic import het_white
 from statsmodels.graphics.regressionplots import add_lowess
-from statsmodels.stats.diagnostic import linear_reset
 from statsmodels.regression.linear_model import RegressionResultsWrapper
 from statsmodels.miscmodels.ordinal_model import OrderedResultsWrapper
 from statsmodels.stats.outliers_influence import OLSInfluence
@@ -493,34 +482,8 @@ def plot_residuals_dist(
         )
     plt.show()
 
-
-# def plot_residuals_dist(
-#     residuals, figsize, key, shrink=0.7, stat="percent", decimals=".1f"
-# ):
-
-#     ax = plt.subplots(figsize=figsize)[1]
-#     sns.histplot(data=residuals, discrete=True, shrink=shrink, ax=ax, stat=stat)
-#     ax.set_xlabel("Residuals (observed - predicted)")
-#     ax.set_title(f"Distribution of residuals for the {key} data", pad=20)
-#     ax.grid(False)
-#     for bar in ax.patches:
-#         height = bar.get_height()
-#         if height == 0:
-#             continue
-#         x = bar.get_x() + bar.get_width() / 2
-#         ax.text(
-#             x,
-#             height + 0.01,
-#             s=f"{height:{decimals}}%",
-#             ha="center",
-#             va="bottom",
-#             fontsize=9,
-#         )
-#     plt.show()
-
-
 def make_and_customize_confusion_matrix(
-    labels: list[int, ...],
+    labels: list[int],
     y_test: pd.Series | pd.DataFrame,
     y_pred: pd.Series | pd.DataFrame,
     figsize: tuple[float | int, float | int],
@@ -532,7 +495,7 @@ def make_and_customize_confusion_matrix(
     Makes a confusion matrix plot.
 
     Args:
-        labels (list[int, ...]): Labels for confusion matrix rows and columns.
+        labels (list[int]): Labels for confusion matrix rows and columns.
         y_test (pd.Series | pd.DataFrame): Values of the response variable on test data.
         y_pred (pd.Series | pd.DataFrame): Values of the response predictions on the test data.
         figsize (tuple[float | int, float | int]): Matrix width and height.
@@ -554,9 +517,9 @@ def make_and_customize_confusion_matrix(
 
 
 def compare_regression_models(
-    results: list[RegressionResultsWrapper, ...],
-    RSE_list: list[float, ...],
-    MAE_list: list[float, ...],
+    results: list[RegressionResultsWrapper],
+    RSE_list: list[float],
+    MAE_list: list[float],
     figsize: tuple[float | int, float | int],
     suptitle: str,
     right: float,
@@ -567,9 +530,9 @@ def compare_regression_models(
     Plots pointplot subplots for regression model metrics.
 
     Args:
-        results (list[RegressionResultsWrapper, ...]): Results for regression models to compare.
-        RSE_list (list[float, ...]): A list of RSE metrics for different models.
-        MAE_list (list[float, ...]): A list of MAE metrics for different models.
+        results (list[RegressionResultsWrapper]): Results for regression models to compare.
+        RSE_list (list[float]): A list of RSE metrics for different models.
+        MAE_list (list[float]): A list of MAE metrics for different models.
         figsize (tuple[float | int, float | int]): Figure width and height.
         suptitle (str): The title of the figure.
         right (float): The shift of the suptitle to the right.
@@ -611,8 +574,8 @@ def compare_regression_models(
 
 
 def transform_and_scale_predictors(
-    cols: list[str, ...],
-    transform_funcs: list[str, ...],
+    cols: list[str],
+    transform_funcs: list[str],
     predictors_df: pd.DataFrame,
     scaler: StandardScaler,
 ) -> pd.DataFrame:
@@ -620,8 +583,8 @@ def transform_and_scale_predictors(
     Trandsforms and scales predictors' dataframe.
 
     Args:
-        cols (list[str, ...]): The list of predictors' names.
-        transform_funcs (list[str, ...]): Chosen transformation functions for certain predictors.
+        cols (list[str]): The list of predictors' names.
+        transform_funcs (list[str]): Chosen transformation functions for certain predictors.
         predictors_df (pd.DataFrame): The original dataframe of predictors.
         scaler (StandardScaler): The StandardScaler obejct.
 
@@ -849,7 +812,7 @@ def compare_train_test_metrics(
     X_test_transf_scaled_5: pd.DataFrame,
     y_test: pd.DataFrame,
     y_test_pred: np.ndarray,
-    train_metrics: list[float, ...],
+    train_metrics: list[float],
 ) -> pd.DataFrame:
     """
     Makes a dataframe of metrics for test and train data.
@@ -858,7 +821,7 @@ def compare_train_test_metrics(
         X_test_transf_scaled_5 (pd.DataFrame): Test data prepared for predictions (transformed and scaled).
         y_test (pd.DateFrame): Response values of the test data.
         y_test_pred (np.ndarray): Predictions of response on the test data.
-        train_metrics (list[float, ...]): Metrics on the model performance.
+        train_metrics (list[float]): Metrics on the model performance.
 
     Returns:
         pd.DataFrame: The dataframe of model performance metrics on different subsets.
@@ -970,7 +933,7 @@ def make_ordinal_predictions(
 
 
 def compare_ordered_models(
-    results: list[OrderedResultsWrapper, ...],
+    results: list[OrderedResultsWrapper],
     figsize: tuple[float | int, float | int],
     key: str,
 ) -> None:
