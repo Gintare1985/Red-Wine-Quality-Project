@@ -54,6 +54,9 @@ def plot_triangle_heatmap(
     figsize: tuple[float | int, float | int],
     annot_size: float | int,
     title: str,
+    cmap: str,
+    vmax: float | int,
+    vmin: float | int,
     label_size: float | int = 9,
     title_size: float | int = 12,
     float_precision: str = ".1f",
@@ -66,6 +69,9 @@ def plot_triangle_heatmap(
         figsize (tuple[float|int, float|int]): Width and height of the plot.
         annot_size (float | int): Font size for annotations inside heatmap cells.
         title (str): The title of the heatmap.
+        cmap (str): Color palette for the heatmap.
+        vmax (float | int): Max value to anchor to the heatmap.
+        vmin (float | int): Min value to anchor to the heatmap.
         label_size (float | int, optional): Font size for axes labels. Defaults to 9.
         title_size (float | int, optional): Font size for the title. Defaults to 12.
         float_precision (str, optional): String format for displaying numerical values. Defaults to '.1f'.
@@ -75,7 +81,9 @@ def plot_triangle_heatmap(
     sns.heatmap(
         data,
         mask=mask,
-        cmap="coolwarm",
+        cmap=cmap,
+        vmax=vmax,
+        vmin=vmin,
         annot=True,
         fmt=float_precision,
         linewidths=0.5,
@@ -482,8 +490,9 @@ def plot_residuals_dist(
         )
     plt.show()
 
+
 def make_and_customize_confusion_matrix(
-    labels: list[int],
+    labels: list[int | str],
     y_test: pd.Series | pd.DataFrame,
     y_pred: pd.Series | pd.DataFrame,
     figsize: tuple[float | int, float | int],
@@ -495,7 +504,7 @@ def make_and_customize_confusion_matrix(
     Makes a confusion matrix plot.
 
     Args:
-        labels (list[int]): Labels for confusion matrix rows and columns.
+        labels (list[int | str]): Labels for confusion matrix rows and columns.
         y_test (pd.Series | pd.DataFrame): Values of the response variable on test data.
         y_pred (pd.Series | pd.DataFrame): Values of the response predictions on the test data.
         figsize (tuple[float | int, float | int]): Matrix width and height.
@@ -932,7 +941,7 @@ def make_ordinal_predictions(
     return y_pred
 
 
-def compare_ordered_models(
+def compare_log_models(
     results: list[OrderedResultsWrapper],
     figsize: tuple[float | int, float | int],
     key: str,
@@ -949,7 +958,7 @@ def compare_ordered_models(
     BIC_list = [result.bic for result in results]
     metrics_df = pd.DataFrame(
         data={"AIC": AIC_list, "BIC": BIC_list},
-        index=["Mod.1", "Mod.2", "Mod.3", "Mod.4", "Mod.5"],
+        index=[f"Mod.{i}" for i in range(1, len(results) + 1)],
     )
     metrics_df = metrics_df.reset_index().rename(columns={"index": "Models"})
 
