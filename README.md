@@ -8,12 +8,12 @@
 This repository contains analysis of Red Wine Quality dataset. The purpose is to practice making an **explanatory** model using linear regression models.
 
 #### Project overview
-This project includes, first, exploratory data analysis of the Red Win Quality dataset. After splitting data to train (80%) and test (20%) subsets Multiple Linear Regression and Logistic Regression models were fitted. Five hypotheses were stated about possible effects of particular predictors. The interpretation of statistically significant coefficients is provided to understand each predictors' impact on perceived wine quality. Assumptions for each model were tested. Each model's performance on hold-out dataset was fulfilled, and its performance was evaluated.
+First, this project includes exploratory data analysis of the Red Win Quality dataset. After splitting data to train (80%) and test (20%) subsets Multiple Linear Regression and Logistic Regression models were fitted. Five hypotheses were stated about possible effects of particular predictors. The interpretation of statistically significant coefficients is provided to understand each predictors' impact on perceived wine quality. Assumptions for each model were tested. Each model's performance on hold-out dataset was fulfilled, and its performance was evaluated.
 
 #### Dataset
 [Red Wine Quality](https://www.kaggle.com/datasets/uciml/red-wine-quality-cortez-et-al-2009) is taken from *Kaggle*.  
 
-This dataset contains 1599 unique red wine samples with perceived wine quality estimate. Though there are 240 duplicated samples, but these are only wine samples with the same physicochemical features.   
+This dataset contains 1599 unique red wine samples with perceived wine quality estimate. Though there are 240 duplicated samples, but these are only wine samples with the same physicochemical features. Dataset is highly imbalanced since 80% of the cases belong to the 5th and 6th perceived quality classes.
 
 The features in the dataset are all **numerical**: <br>
  * fixed acidity,
@@ -37,7 +37,7 @@ The features in the dataset are all **numerical**: <br>
 * **statsmodels, scipy, sklearn**: For regression modelling, statistical tests and metric calculation.
 
 #### Key insights:
-After performing both Multiple Linear (MLR), Ordered Logistic (OLR), and Binary Logistic Regression models we can state:
+After performing Multiple Linear (MLR), Ordered Logistic (OLR), and Binary Logistic Regression models we can state:
 
 * There were identified the same set of statistically significant features that have an impact on perceived wine quality using both OLR and MLR models.
 * MLR model failed for linearity, residuals' normality and homoskedasticity assumptions, causing our inference to be biased and not reliable.
@@ -51,6 +51,6 @@ After performing both Multiple Linear (MLR), Ordered Logistic (OLR), and Binary 
 
 #### Suggestions for improvement:
 
-* For explanatory purposes we sought for the simplest model for better interpretability, however, failing with assumptions for Ordinal and Multiple Linear Regression models make us conclude that further we should experiment including nonlinear terms of the predictors, search for meaningful interaction terms that could help us better capture nonlinearity in predictors-response relationship.
+* For explanatory purposes we sought for the simplest models for better interpretability, however, failing with assumptions for Ordinal and Multiple Linear Regression models make us conclude that further we should experiment including nonlinear terms of the predictors, search for meaningful interaction terms that could help us better capture nonlinearity in predictors-response relationship.
 
-* Receiving more data for rarer wine quality samples could help as improve our final binary Logistic regression model and ensure model's robustness.
+* Receiving more data for rarer wine quality samples could help as improve our models to ensure their robustness.

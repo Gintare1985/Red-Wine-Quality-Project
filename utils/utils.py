@@ -404,7 +404,6 @@ def rescale_to_units(
         predictor_scaled = change * none_transf_stats[i][1] / none_transf_stats[i][0]
         marginal_change = round(coef * predictor_scaled, 4)
         i += 1
-
     return marginal_change
 
 
@@ -440,7 +439,6 @@ def rescale_to_odds(
         i += 1
 
     perc_change = (odds_ratio - 1) * 100
-
     return odds_ratio, perc_change
 
 
@@ -614,7 +612,6 @@ def transform_and_scale_predictors(
         columns=df_pred_transformed.columns,
         index=df_pred_transformed.index,
     )
-
     return df_pred_transf_scaled
 
 
@@ -772,7 +769,6 @@ def plot_leverage(
     plt.show()
     max_leverage = np.argmax(infl.hat_matrix_diag)
     print(f"Index of the highest leverage observation  - {max_leverage}")
-
     return max_leverage
 
 
@@ -854,7 +850,6 @@ def compare_train_test_metrics(
     comparison_metrics["Difference in metric"] = (
         comparison_metrics["Train data"] - comparison_metrics["Test data"]
     )
-
     return comparison_metrics
 
 
@@ -937,7 +932,6 @@ def make_ordinal_predictions(
     class_labels = np.unique(results.model.endog) + 3
     predicted_probs_df = pd.DataFrame(predicted_probs, columns=class_labels)
     y_pred = predicted_probs_df.idxmax(axis=1).astype(int)
-
     return y_pred
 
 
@@ -963,7 +957,7 @@ def compare_log_models(
     metrics_df = metrics_df.reset_index().rename(columns={"index": "Models"})
 
     columns = metrics_df.columns[1:]
-    fig, ax = plt.subplots(figsize=figsize)
+    ax = plt.subplots(figsize=figsize)[1]
     for col in columns:
         sns.pointplot(data=metrics_df, y=col, x="Models", ax=ax, label=col)
         ax.set_title(f"AIC and BIC metrics for different {key} models", pad=20)
@@ -1038,4 +1032,95 @@ def plot_multi_lines(
         bbox_to_anchor=(1, 1),
         alignment="left",
     )
+    plt.show()
+
+
+def make_odds_interpretation_df(
+    stds: list[float],
+    coefs: pd.Series,
+    transformations: list[str],
+    none_transf_stats: list[tuple[float, float]],
+) -> pd.DataFrame:
+    """
+    Creates summary summary table for interpretation of logistic regression coefficients.
+
+    Args:
+        stds (list[float]): List of predictors standard deviations.
+        coefs (pd.Series): Coefficients from the logistic regression model.
+        transformations (list[str]): List of transformations made on predictors.
+        none_transf_stats (list[tuple[float, float]]): List of tuples for predictor's
+        standard deviation and mean metrics.
+
+    Returns:
+        pd.DataFrame: The dataframe of the metrics.
+    """
+    changes_in_odds = []
+    odds_ratios = []
+    for std, coef, transf in zip(stds, coefs, transformations):
+        odds_ratio, perc_change = rescale_to_odds(
+            coef, std, 0.1, transf, none_transf_stats
+        )
+        changes_in_odds.append(perc_change)
+        odds_ratios.append(odds_ratio)
+    summary = (
+        pd.DataFrame(
+            {
+                "Coefficient": coefs,
+                "Transformation": transformations,
+                "Odds ratio": odds_ratios,
+                "Effect on odds of 10% increase in the predictor": changes_in_odds,
+            }
+        )
+        .reset_index()
+        .rename(columns={"index": "Predictors"})
+    )
+    return summary
+
+
+def make_effects_barplot(
+    df: pd.DataFrame,
+    figsize: tuple[float, float],
+    xlabel: str,
+    title: str,
+    offset: float,
+    xlim: tuple[float, float] = None,
+    decimals: str = ".2f",
+) -> None:
+    """
+    Makes a horizontal barplot for predictors' effect on target variable.
+
+    Args:
+        df (pd.DataFrame): Summary metrics dataframe.
+        figsize (tuple[float, float]): Width and height of the figure.
+        xlabel (str): The width and height of the figure.
+        title (str): The title of the figure.
+        offset (float): The offset of the values from the bars on the plot.
+        xlim (tuple[float, float], optional): X axis limits. Defaults to None.
+        decimals (str, optional): A format of values on the bars. Defaults to '.2f'.
+    """
+    ax = plt.subplots(figsize=figsize)[1]
+    sns.barplot(
+        data=df,
+        x=xlabel,
+        y="Predictors",
+    )
+    ax.set_title(title, pad=20)
+    ax.set_xlim(xlim)
+    ax.grid(False)
+    for bar in ax.patches:
+        width = bar.get_width()
+        if width == 0:
+            continue
+
+        y = bar.get_y() + bar.get_height() / 2
+        offset = offset
+
+        if width > 0:
+            x = width + offset
+            ha = "left"
+        else:
+            x = width - offset
+            ha = "right"
+
+        ax.text(x, y, s=f"{width:{decimals}}", ha=ha, va="center", fontsize=8.5)
     plt.show()
